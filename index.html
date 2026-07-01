@@ -1,50 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance AI</title>
-
-    <style>
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            background:#f5f7fb;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            margin:0;
-        }
-
-        .card{
-            background:white;
-            padding:40px;
-            border-radius:15px;
-            box-shadow:0 10px 30px rgba(0,0,0,.1);
-            text-align:center;
-        }
-
-        h1{
-            color:#2563eb;
-        }
-
-        p{
-            color:#666;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finance AI — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
-<div class="card">
-    <h1>🎉 Finance AI</h1>
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">FA</div>
+      <span class="brand-name">Finance AI</span>
+    </div>
 
-    <h2>Project Successfully Deployed!</h2>
+    <nav class="sidebar-nav">
+      <span class="nav-label">Menu</span>
+      <a href="#" class="nav-item active" data-nav="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 3l9 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9.5V21h14V9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-nav="transactions">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7h13l3 3v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Transactions</span>
+      </a>
+      <a href="#" class="nav-item" data-nav="budgets">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Budgets</span>
+      </a>
+      <a href="#" class="nav-item" data-nav="repayments">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/><path d="M7 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Repayments</span>
+      </a>
+      <a href="#" class="nav-item" data-nav="reports">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 20V10M12 20V4M20 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Reports</span>
+      </a>
 
-    <p>Your Vercel deployment is working correctly.</p>
+      <span class="nav-label">Workspace</span>
+      <a href="#" class="nav-item" data-nav="ai">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>AI Insights</span>
+        <span class="badge-soon">Soon</span>
+      </a>
+      <a href="#" class="nav-item" data-nav="settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Settings</span>
+      </a>
+    </nav>
 
-    <p>Next step: Build the AI Finance Dashboard.</p>
-</div>
+    <div class="sidebar-user">
+      <div class="user-avatar">KZ</div>
+      <div class="user-meta">
+        <span class="user-name">Kuok Zai</span>
+        <span class="user-plan">Personal Plan</span>
+      </div>
+    </div>
+  </aside>
 
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <!-- TOP NAV -->
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menuToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="topbar-title">
+        <h1>Dashboard</h1>
+        <p id="todayLabel">—</p>
+      </div>
+
+      <div class="topbar-search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" placeholder="Search transactions, categories…" />
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span class="dot"></span>
+        </button>
+        <button class="btn-primary" id="addTransactionBtn">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Add Transaction
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- Stat cards -->
+      <section class="stat-grid" id="statGrid" aria-label="Financial summary"></section>
+
+      <!-- Middle row: charts -->
+      <section class="grid-2col">
+        <div class="card chart-card">
+          <div class="card-head">
+            <div>
+              <h2>Monthly Spending Trend</h2>
+              <p class="card-sub">Income vs. expense, last 6 months</p>
+            </div>
+            <div class="legend-inline">
+              <span><i class="dot-legend income"></i>Income</span>
+              <span><i class="dot-legend expense"></i>Expense</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-head">
+            <div>
+              <h2>Expense by Category</h2>
+              <p class="card-sub">This month's breakdown</p>
+            </div>
+          </div>
+          <div class="chart-wrap donut-wrap">
+            <canvas id="categoryChart"></canvas>
+          </div>
+          <ul class="category-legend" id="categoryLegend"></ul>
+        </div>
+      </section>
+
+      <!-- Bottom row: repayments + transactions -->
+      <section class="grid-2col grid-2col--asym">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Upcoming Repayments</h2>
+              <p class="card-sub">Due within 30 days</p>
+            </div>
+            <a href="#" class="link-more">View all</a>
+          </div>
+          <ul class="repayment-list" id="repaymentList"></ul>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Recent Transactions</h2>
+              <p class="card-sub">Latest activity across all accounts</p>
+            </div>
+            <a href="#" class="link-more">View all</a>
+          </div>
+          <div class="table-wrap">
+            <table class="txn-table">
+              <thead>
+                <tr>
+                  <th>Merchant</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th class="align-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="transactionBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dashboard.js"></script>
 </body>
 </html>
