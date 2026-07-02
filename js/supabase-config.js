@@ -13,5 +13,8 @@
 
 const SUPABASE_CONFIG = {
   url: "https://xeswnmjbuyatfqjprhiu.supabase.co",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlc3dubWpidXlhdGZxanByaGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODgxMDAsImV4cCI6MjA5ODQ2NDEwMH0.t7BBzrD7crVS1fIFWn9uPOZrsA2CG8FwncMyBD6QXks"
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlc3dubWpidXlhdGZxanByaGl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4ODgxMDAsImV4cCI6MjA5ODQ2NDEwMH0.t7BBzrD7crVS1fIFWn9uPOZrsA2CG8FwncMyBD6QXks",
+  // Assumed bucket name — verify it exists in Supabase Studio → Storage.
+  // Create it there if missing; do not change schema/tables to fix this.
+  storageBucket: "receipts"
 };
