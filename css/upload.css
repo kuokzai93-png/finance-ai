@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Upload page — dropzone, file preview grid, upload history
+   Scoped to upload.html only. Shared chrome (sidebar/topbar/cards) stays
+   in style.css.
+   ========================================================================== */
+
+.dropzone {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  background: var(--bg);
+  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+
+.dropzone.drag-over {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.dropzone-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.dropzone-icon svg { width: 22px; height: 22px; }
+
+.dropzone-title { font-size: 15px; font-weight: 700; margin: 0; }
+.dropzone-sub { font-size: 12.5px; color: var(--text-tertiary); margin: 0; }
+.dropzone-formats { font-size: 12px; color: var(--text-tertiary); margin: 10px 0 0; }
+
+.upload-error {
+  margin: 12px 2px 0;
+  font-size: 12.5px;
+  color: var(--red);
+  font-weight: 500;
+}
+
+/* ---------- File preview grid ---------- */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.file-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+.file-thumb {
+  height: 110px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.file-thumb .pdf-icon { color: var(--red); font-size: 12px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.file-thumb .pdf-icon svg { width: 30px; height: 30px; }
+
+.file-meta { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+.file-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-size { font-size: 11.5px; color: var(--text-tertiary); }
+
+.file-status {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.file-status.pending   { background: var(--bg);        color: var(--text-secondary); }
+.file-status.uploading { background: var(--blue-soft); color: var(--blue); }
+.file-status.done      { background: var(--green-soft); color: var(--green); }
+.file-status.error     { background: var(--red-soft);  color: var(--red); }
+
+.file-actions { display: flex; gap: 8px; margin-top: 2px; }
+.file-actions button {
+  border: none;
+  background: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 0;
+  color: var(--text-tertiary);
+}
+.file-actions button:hover { color: var(--text-primary); }
+.file-actions .retry-btn { color: var(--blue); }
+.file-actions .retry-btn:hover { color: #1c4fc0; }
+
+/* ---------- Upload history ---------- */
+.upload-history { display: flex; flex-direction: column; gap: 2px; }
+
+.upload-history li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.upload-history li:last-child { border-bottom: none; }
+
+.upload-history .hist-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.upload-history .hist-name { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upload-history .hist-date { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
+.upload-history .hist-link { font-size: 12px; font-weight: 600; color: var(--blue); }
+
+@media (max-width: 520px) {
+  .dropzone { padding: 32px 16px; }
+  .file-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
