@@ -1,8 +1,8 @@
 /**
  * dashboard.js
  * ------------------------------------------------------------------
- * Renders the Finance AI dashboard using DASHBOARD_DATA (see data.js).
- * Pure vanilla JS + Chart.js. No backend calls in this task.
+ * Renders the Finance AI dashboard using live Supabase data
+ * (see supabase.js). Handles loading and error states.
  * ------------------------------------------------------------------
  */
 
@@ -30,33 +30,87 @@
   }
 
   /* ---------------------------------------------------------------
+   * Loading skeletons
+   * --------------------------------------------------------------- */
+  function showLoadingState() {
+    const statGrid = document.getElementById("statGrid");
+    if (statGrid) {
+      statGrid.innerHTML = Array.from({ length: 5 })
+        .map(() => `
+          <div class="stat-card">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-line" style="width:60%"></div>
+            <div class="skeleton skeleton-line" style="width:80%; height:20px;"></div>
+            <div class="skeleton skeleton-line" style="width:50%"></div>
+          </div>`)
+        .join("");
+    }
+
+    const repaymentList = document.getElementById("repaymentList");
+    if (repaymentList) {
+      repaymentList.innerHTML = Array.from({ length: 4 })
+        .map(() => `<li><div class="skeleton skeleton-icon" style="border-radius:10px;"></div>
+          <div class="repay-info"><div class="skeleton skeleton-line" style="width:70%"></div>
+          <div class="skeleton skeleton-line" style="width:40%"></div></div></li>`)
+        .join("");
+    }
+
+    const txnBody = document.getElementById("transactionBody");
+    if (txnBody) {
+      txnBody.innerHTML = Array.from({ length: 5 })
+        .map(() => `<tr><td colspan="4"><div class="skeleton skeleton-line" style="width:100%; height:18px;"></div></td></tr>`)
+        .join("");
+    }
+
+    const legend = document.getElementById("categoryLegend");
+    if (legend) {
+      legend.innerHTML = Array.from({ length: 4 })
+        .map(() => `<li><div class="skeleton skeleton-line" style="width:100%"></div></li>`)
+        .join("");
+    }
+  }
+
+  /* ---------------------------------------------------------------
+   * Error banner
+   * --------------------------------------------------------------- */
+  function showErrorState(message, onRetry) {
+    const content = document.querySelector(".content");
+    if (!content) return;
+
+    let banner = document.getElementById("errorBanner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "errorBanner";
+      banner.className = "error-banner";
+      content.prepend(banner);
+    }
+
+    banner.innerHTML = `
+      <span>Unable to load dashboard data: ${message}</span>
+      <button class="btn-retry" id="retryBtn">Retry</button>
+    `;
+
+    document.getElementById("retryBtn").addEventListener("click", onRetry);
+
+    ["statGrid", "repaymentList", "transactionBody", "categoryLegend"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = "";
+    });
+  }
+
+  function clearErrorState() {
+    const banner = document.getElementById("errorBanner");
+    if (banner) banner.remove();
+  }
+
+  /* ---------------------------------------------------------------
    * Stat cards
    * --------------------------------------------------------------- */
   const STAT_CONFIG = [
-    {
-      key: "totalBalance",
-      label: "Total Balance",
-      icon: "wallet",
-      tone: "blue"
-    },
-    {
-      key: "monthlyIncome",
-      label: "Monthly Income",
-      icon: "arrowUp",
-      tone: "green"
-    },
-    {
-      key: "monthlyExpense",
-      label: "Monthly Expense",
-      icon: "arrowDown",
-      tone: "red"
-    },
-    {
-      key: "savings",
-      label: "Savings",
-      icon: "piggy",
-      tone: "purple"
-    }
+    { key: "totalBalance",   label: "Total Balance",   icon: "wallet",    tone: "blue" },
+    { key: "monthlyIncome",  label: "Monthly Income",  icon: "arrowUp",   tone: "green" },
+    { key: "monthlyExpense", label: "Monthly Expense", icon: "arrowDown", tone: "red" },
+    { key: "savings",        label: "Savings",         icon: "piggy",     tone: "purple" }
   ];
 
   const ICONS = {
@@ -66,14 +120,15 @@
     piggy: '<path d="M4 12a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1h1.2a.8.8 0 0 1 .7 1.2l-1 1.7a.8.8 0 0 1-.7.4H18v1a2 2 0 0 1-2 2h-1v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V19H9v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V18a5 5 0 0 1-2-4v-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="15" cy="10.5" r="0.9" fill="currentColor"/>'
   };
 
-  function renderStatCards() {
+  function renderStatCards(data) {
     const grid = document.getElementById("statGrid");
     if (!grid) return;
 
     const cardsHtml = STAT_CONFIG.map((cfg) => {
-      const d = DASHBOARD_DATA.summary[cfg.key];
-      const deltaClass = d.direction === "up" ? "up" : "down";
-      const arrow = d.direction === "up" ? "▲" : "▼";
+      const d = data.summary[cfg.key];
+      const deltaHtml = d.deltaPct === null
+        ? `<span class="stat-delta up" style="background:var(--bg); color:var(--text-tertiary);">Current balance</span>`
+        : `<span class="stat-delta ${d.direction === "up" ? "up" : "down"}">${d.direction === "up" ? "▲" : "▼"} ${d.deltaPct}% vs last month</span>`;
 
       return `
         <div class="stat-card">
@@ -82,13 +137,12 @@
           </div>
           <div class="stat-label">${cfg.label}</div>
           <div class="stat-value">${currency(d.value)}</div>
-          <span class="stat-delta ${deltaClass}">${arrow} ${d.deltaPct}% vs last month</span>
+          ${deltaHtml}
         </div>`;
     }).join("");
 
-    // 5th slot: Upcoming Repayments summary card (kept in the stat row per spec)
-    const nextRepayment = DASHBOARD_DATA.repayments[0];
-    const repaymentCard = `
+    const nextRepayment = data.repayments[0];
+    const repaymentCard = nextRepayment ? `
       <div class="stat-card">
         <div class="stat-icon amber">
           <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -96,19 +150,24 @@
         <div class="stat-label">Next Repayment</div>
         <div class="stat-value">${currency(nextRepayment.amount)}</div>
         <span class="stat-delta down">${nextRepayment.dueLabel}</span>
-      </div>`;
+      </div>` : "";
 
     grid.innerHTML = cardsHtml + repaymentCard;
   }
 
   /* ---------------------------------------------------------------
-   * Repayments list
+   * Repayments list (placeholder data — no table yet, see supabase.js)
    * --------------------------------------------------------------- */
-  function renderRepayments() {
+  function renderRepayments(data) {
     const list = document.getElementById("repaymentList");
     if (!list) return;
 
-    list.innerHTML = DASHBOARD_DATA.repayments.map((r) => `
+    if (!data.repayments.length) {
+      list.innerHTML = `<li class="empty-state">No upcoming repayments.</li>`;
+      return;
+    }
+
+    list.innerHTML = data.repayments.map((r) => `
       <li>
         <div class="repay-icon">${r.icon}</div>
         <div class="repay-info">
@@ -123,21 +182,21 @@
   /* ---------------------------------------------------------------
    * Transactions table
    * --------------------------------------------------------------- */
-  const CATEGORY_TONES = {
-    "Food & Dining": { bg: "#E7F6EF", fg: "#1B9E6B" },
-    "Transport":     { bg: "#FBF0DE", fg: "#C97A1A" },
-    "Income":        { bg: "#EAF1FE", fg: "#2F6FED" },
-    "Subscriptions": { bg: "#FDEBEC", fg: "#E5484D" },
-    "Shopping":      { bg: "#F1EEFE", fg: "#7C5CFC" },
-    "Utilities":     { bg: "#F1F0ED", fg: "#6F6E69" }
-  };
+  function categoryTone(color) {
+    return { bg: `${color}1A`, fg: color };
+  }
 
-  function renderTransactions() {
+  function renderTransactions(data) {
     const body = document.getElementById("transactionBody");
     if (!body) return;
 
-    body.innerHTML = DASHBOARD_DATA.transactions.map((t) => {
-      const tone = CATEGORY_TONES[t.category] || { bg: "#F1F0ED", fg: "#6F6E69" };
+    if (!data.transactions.length) {
+      body.innerHTML = `<tr><td colspan="4" class="empty-state">No transactions found.</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = data.transactions.map((t) => {
+      const tone = categoryTone(t.color || "#6F6E69");
       const isPositive = t.amount > 0;
       return `
         <tr>
@@ -159,11 +218,16 @@
   /* ---------------------------------------------------------------
    * Category legend (paired with donut chart)
    * --------------------------------------------------------------- */
-  function renderCategoryLegend() {
+  function renderCategoryLegend(data) {
     const legend = document.getElementById("categoryLegend");
     if (!legend) return;
 
-    legend.innerHTML = DASHBOARD_DATA.categories.map((c) => `
+    if (!data.categories.length) {
+      legend.innerHTML = `<li class="empty-state">No expenses recorded this month.</li>`;
+      return;
+    }
+
+    legend.innerHTML = data.categories.map((c) => `
       <li>
         <span class="cat-name"><i class="swatch" style="background:${c.color}"></i>${c.name}</span>
         <span class="cat-value">${currency(c.value)}</span>
@@ -174,18 +238,22 @@
   /* ---------------------------------------------------------------
    * Charts
    * --------------------------------------------------------------- */
-  function renderTrendChart() {
+  let trendChartInstance = null;
+  let categoryChartInstance = null;
+
+  function renderTrendChart(data) {
     const ctx = document.getElementById("trendChart");
     if (!ctx || typeof Chart === "undefined") return;
+    if (trendChartInstance) trendChartInstance.destroy();
 
-    new Chart(ctx, {
+    trendChartInstance = new Chart(ctx, {
       type: "line",
       data: {
-        labels: DASHBOARD_DATA.trend.labels,
+        labels: data.trend.labels,
         datasets: [
           {
             label: "Income",
-            data: DASHBOARD_DATA.trend.income,
+            data: data.trend.income,
             borderColor: "#1B9E6B",
             backgroundColor: "rgba(27,158,107,0.08)",
             tension: 0.35,
@@ -195,7 +263,7 @@
           },
           {
             label: "Expense",
-            data: DASHBOARD_DATA.trend.expense,
+            data: data.trend.expense,
             borderColor: "#E5484D",
             backgroundColor: "rgba(229,72,77,0.06)",
             tension: 0.35,
@@ -215,41 +283,33 @@
             backgroundColor: "#1B1B18",
             padding: 10,
             cornerRadius: 8,
-            callbacks: {
-              label: (item) => `${item.dataset.label}: ${currency(item.parsed.y)}`
-            }
+            callbacks: { label: (item) => `${item.dataset.label}: ${currency(item.parsed.y)}` }
           }
         },
         scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: "#9B9A94", font: { size: 11.5 } }
-          },
+          x: { grid: { display: false }, ticks: { color: "#9B9A94", font: { size: 11.5 } } },
           y: {
             grid: { color: "#F0EFEB" },
             border: { display: false },
-            ticks: {
-              color: "#9B9A94",
-              font: { size: 11.5 },
-              callback: (v) => "$" + v / 1000 + "k"
-            }
+            ticks: { color: "#9B9A94", font: { size: 11.5 }, callback: (v) => "$" + v / 1000 + "k" }
           }
         }
       }
     });
   }
 
-  function renderCategoryChart() {
+  function renderCategoryChart(data) {
     const ctx = document.getElementById("categoryChart");
     if (!ctx || typeof Chart === "undefined") return;
+    if (categoryChartInstance) categoryChartInstance.destroy();
 
-    new Chart(ctx, {
+    categoryChartInstance = new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: DASHBOARD_DATA.categories.map((c) => c.name),
+        labels: data.categories.map((c) => c.name),
         datasets: [{
-          data: DASHBOARD_DATA.categories.map((c) => c.value),
-          backgroundColor: DASHBOARD_DATA.categories.map((c) => c.color),
+          data: data.categories.map((c) => c.value),
+          backgroundColor: data.categories.map((c) => c.color),
           borderWidth: 3,
           borderColor: "#FFFFFF",
           hoverOffset: 6
@@ -265,9 +325,7 @@
             backgroundColor: "#1B1B18",
             padding: 10,
             cornerRadius: 8,
-            callbacks: {
-              label: (item) => `${item.label}: ${currency(item.parsed)}`
-            }
+            callbacks: { label: (item) => `${item.label}: ${currency(item.parsed)}` }
           }
         }
       }
@@ -291,16 +349,34 @@
   }
 
   /* ---------------------------------------------------------------
+   * Render orchestration
+   * --------------------------------------------------------------- */
+  function renderAll(data) {
+    renderStatCards(data);
+    renderRepayments(data);
+    renderTransactions(data);
+    renderCategoryLegend(data);
+    renderTrendChart(data);
+    renderCategoryChart(data);
+  }
+
+  async function loadDashboard() {
+    clearErrorState();
+    showLoadingState();
+    try {
+      const data = await SupabaseAPI.fetchDashboardData();
+      renderAll(data);
+    } catch (err) {
+      showErrorState(err.message || "Unknown error", loadDashboard);
+    }
+  }
+
+  /* ---------------------------------------------------------------
    * Init
    * --------------------------------------------------------------- */
   document.addEventListener("DOMContentLoaded", () => {
     renderTodayLabel();
-    renderStatCards();
-    renderRepayments();
-    renderTransactions();
-    renderCategoryLegend();
-    renderTrendChart();
-    renderCategoryChart();
     bindSidebarToggle();
+    loadDashboard();
   });
 })();
