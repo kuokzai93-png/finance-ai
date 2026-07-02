@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Finance AI — Dashboard</title>
+<title>Finance AI — Upload</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/upload.css" />
 </head>
 <body>
 
@@ -20,7 +21,7 @@
 
     <nav class="sidebar-nav">
       <span class="nav-label">Menu</span>
-      <a href="#" class="nav-item active" data-nav="dashboard">
+      <a href="index.html" class="nav-item" data-nav="dashboard">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 3l9 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9.5V21h14V9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Dashboard</span>
       </a>
@@ -28,7 +29,7 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M3 7h13l3 3v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <span>Transactions</span>
       </a>
-      <a href="upload.html" class="nav-item" data-nav="upload">
+      <a href="upload.html" class="nav-item active" data-nav="upload">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4 7 9M12 4l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Upload Receipts</span>
       </a>
@@ -69,107 +70,55 @@
   <!-- ============ MAIN ============ -->
   <div class="main">
 
-    <!-- TOP NAV -->
     <header class="topbar">
       <button class="icon-btn only-mobile" id="menuToggle" aria-label="Toggle menu">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
-
       <div class="topbar-title">
-        <h1>Dashboard</h1>
-        <p id="todayLabel">—</p>
-      </div>
-
-      <div class="topbar-search">
-        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <input type="text" placeholder="Search transactions, categories…" />
-      </div>
-
-      <div class="topbar-actions">
-        <button class="icon-btn" aria-label="Notifications">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8"/></svg>
-          <span class="dot"></span>
-        </button>
-        <button class="btn-primary" id="addTransactionBtn">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Add Transaction
-        </button>
+        <h1>Upload Documents</h1>
+        <p>Add receipts and statements as PDF, JPG, JPEG, or PNG</p>
       </div>
     </header>
 
-    <!-- CONTENT -->
     <main class="content">
 
-      <!-- Stat cards -->
-      <section class="stat-grid" id="statGrid" aria-label="Financial summary"></section>
-
-      <!-- Middle row: charts -->
-      <section class="grid-2col">
-        <div class="card chart-card">
-          <div class="card-head">
-            <div>
-              <h2>Monthly Spending Trend</h2>
-              <p class="card-sub">Income vs. expense, last 6 months</p>
-            </div>
-            <div class="legend-inline">
-              <span><i class="dot-legend income"></i>Income</span>
-              <span><i class="dot-legend expense"></i>Expense</span>
-            </div>
+      <!-- Dropzone -->
+      <section class="card">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" multiple hidden />
+          <div class="dropzone-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4 7 9M12 4l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="chart-wrap">
-            <canvas id="trendChart"></canvas>
-          </div>
+          <p class="dropzone-title">Drag &amp; drop files here</p>
+          <p class="dropzone-sub">or</p>
+          <button class="btn-primary" id="browseBtn" type="button">Browse Files</button>
+          <p class="dropzone-formats">Supported: PDF, JPG, JPEG, PNG · Max 10 MB per file</p>
         </div>
-
-        <div class="card chart-card">
-          <div class="card-head">
-            <div>
-              <h2>Expense by Category</h2>
-              <p class="card-sub">This month's breakdown</p>
-            </div>
-          </div>
-          <div class="chart-wrap donut-wrap">
-            <canvas id="categoryChart"></canvas>
-          </div>
-          <ul class="category-legend" id="categoryLegend"></ul>
-        </div>
+        <p class="upload-error" id="uploadValidationError" hidden></p>
       </section>
 
-      <!-- Bottom row: repayments + transactions -->
-      <section class="grid-2col grid-2col--asym">
-        <div class="card">
-          <div class="card-head">
-            <div>
-              <h2>Upcoming Repayments</h2>
-              <p class="card-sub">Due within 30 days</p>
-            </div>
-            <a href="#" class="link-more">View all</a>
+      <!-- Selected files queue -->
+      <section class="card" id="queueSection" hidden>
+        <div class="card-head">
+          <div>
+            <h2>Selected Files</h2>
+            <p class="card-sub" id="queueSummary">0 files</p>
           </div>
-          <ul class="repayment-list" id="repaymentList"></ul>
+          <button class="btn-primary" id="uploadAllBtn">Upload All</button>
         </div>
+        <div class="file-grid" id="fileGrid"></div>
+      </section>
 
-        <div class="card">
-          <div class="card-head">
-            <div>
-              <h2>Recent Transactions</h2>
-              <p class="card-sub">Latest activity across all accounts</p>
-            </div>
-            <a href="#" class="link-more">View all</a>
+      <!-- Recently uploaded -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Recently Uploaded</h2>
+            <p class="card-sub">Files stored in Supabase Storage</p>
           </div>
-          <div class="table-wrap">
-            <table class="txn-table">
-              <thead>
-                <tr>
-                  <th>Merchant</th>
-                  <th>Category</th>
-                  <th>Date</th>
-                  <th class="align-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody id="transactionBody"></tbody>
-            </table>
-          </div>
+          <button class="link-more" id="refreshUploadsBtn" type="button">Refresh</button>
         </div>
+        <ul class="upload-history" id="uploadHistory"></ul>
       </section>
 
     </main>
@@ -177,10 +126,9 @@
 
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/supabase-storage.js"></script>
+  <script src="js/upload.js"></script>
 </body>
 </html>
